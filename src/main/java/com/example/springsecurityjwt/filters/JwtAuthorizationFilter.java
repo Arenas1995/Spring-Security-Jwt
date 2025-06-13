@@ -45,10 +45,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         try {
             String path = request.getServletPath();
+            String method = request.getMethod();
 
             // Evita filtrar rutas públicas
-            if (path.startsWith("/auth/")) {
-                log.info("Ruta pública detectada: {}", path);
+            if (path.startsWith("/ex/")) {
+                log.info("Ruta pública detectada: {}, {}", path, method);
                 filterChain.doFilter(request, response);
                 return;
             }

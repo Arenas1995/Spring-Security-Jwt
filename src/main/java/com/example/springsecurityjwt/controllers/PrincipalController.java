@@ -34,17 +34,17 @@ public class PrincipalController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @GetMapping("/health-check")
+    @GetMapping("/ex/health-check")
     //@PreAuthorize("hasAuthority('READ')")
     public String hello() {
-        log.info("HEALTH CHECK HELLO");
+        log.info("HEALTH CHECK NO SECURED");
         return "Health check not secured";
     }
 
     @GetMapping("/health-check-secured")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String helloSecured() {
-        log.info("HEALTH CHECK HELLO SECURED");
+        log.info("HEALTH CHECK SECURED");
         return "Health check secured";
     }
 

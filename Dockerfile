@@ -6,6 +6,9 @@ WORKDIR /app
 # Copiar los archivos del proyecto
 COPY . .
 
+# Asigna permisos de ejecución al wrapper de Gradle
+RUN chmod +x ./gradlew
+
 # Construir el proyecto sin ejecutar tests
 RUN ./gradlew clean build -x test -x check
 

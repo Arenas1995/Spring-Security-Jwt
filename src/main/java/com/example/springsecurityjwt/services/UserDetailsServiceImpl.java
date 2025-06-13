@@ -7,6 +7,7 @@ import com.example.springsecurityjwt.repositories.RoleRepository;
 import com.example.springsecurityjwt.repositories.UserRepository;
 import com.example.springsecurityjwt.requests.AuthCreateUserRequest;
 import com.example.springsecurityjwt.responses.AuthResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,9 +24,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -46,6 +47,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
+        log.info("INICIA PROCESO CARGAR USUARIO");
         UserEntity userEntity = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("El usuario no existe: " + username));
 
@@ -65,6 +67,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public AuthResponse createUser(AuthCreateUserRequest authCreateUserRequest) {
 
+        log.info("INICIA PROCESO CREAR USUARIO");
         String username = authCreateUserRequest.username();
         String password = authCreateUserRequest.password();
         List<String> rolesRequest = authCreateUserRequest.roleRequest().roleListName();
@@ -72,6 +75,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Set<RoleEntity> roleEntityList = new HashSet<>(roleRepository.findRoleEntitiesByNameIn(rolesRequest));
 
         if (roleEntityList.isEmpty()) {
+            log.error("ROLES NO ENCONTRADOS");
             throw new IllegalArgumentException("The roles specified does not exist.");
         }
 
@@ -101,6 +105,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         String accessToken = jwtUtilities.generateAccesToken(authentication);
 
+        log.info("USUARIO CREADO CON EXITO");
         return new AuthResponse(username, "User created successfully", accessToken, true);
     }
 }

@@ -9,6 +9,7 @@ import com.example.springsecurityjwt.models.UserEntity;
 import com.example.springsecurityjwt.repositories.UserRepository;
 import com.example.springsecurityjwt.requests.UserRequest;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authorization.method.HandleAuthorizationDenied;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @HandleAuthorizationDenied(handlerClass = SecurityErrorHandler.class)
+@Slf4j
 public class PrincipalController {
 
     private final UserRepository userRepository;
@@ -35,12 +37,14 @@ public class PrincipalController {
     @GetMapping("/hello")
     //@PreAuthorize("hasAuthority('READ')")
     public String hello() {
+        log.info("HEALTH CHECK HELLO");
         return "Hello not secured";
     }
 
     @GetMapping("/hello-secured")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String helloSecured() {
+        log.info("HEALTH CHECK HELLO SECURED");
         return "Hello Secured";
     }
 

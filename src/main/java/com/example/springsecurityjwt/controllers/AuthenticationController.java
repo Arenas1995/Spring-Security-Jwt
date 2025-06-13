@@ -3,8 +3,8 @@ package com.example.springsecurityjwt.controllers;
 import com.example.springsecurityjwt.requests.AuthCreateUserRequest;
 import com.example.springsecurityjwt.requests.AuthLoginRequest;
 import com.example.springsecurityjwt.responses.AuthResponse;
-import com.example.springsecurityjwt.services.AuthenticationServiceImpl;
-import com.example.springsecurityjwt.services.UserDetailsServiceImpl;
+import com.example.springsecurityjwt.services.AuthenticationService;
+import com.example.springsecurityjwt.services.UserDetailService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,18 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/ex/auth")
 public class AuthenticationController {
 
-    private final AuthenticationServiceImpl authenticationService;
+    private final AuthenticationService authenticationService;
 
-    private final UserDetailsServiceImpl userDetailsService;
+    private final UserDetailService userDetailsService;
 
-    public AuthenticationController(AuthenticationServiceImpl authenticationService, UserDetailsServiceImpl userDetailsService) {
+    public AuthenticationController(AuthenticationService authenticationService, UserDetailService userDetailsService) {
         this.authenticationService = authenticationService;
         this.userDetailsService = userDetailsService;
     }
 
     @PostMapping("/sign-up")
     public ResponseEntity<AuthResponse> register(@RequestBody @Valid AuthCreateUserRequest userRequest) {
-        return new ResponseEntity<>(userDetailsService.createUser(userRequest), HttpStatus.CREATED);
+        return new ResponseEntity<>(userDetailsService.registerUser(userRequest), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")

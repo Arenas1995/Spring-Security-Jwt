@@ -2,20 +2,20 @@ package com.example.springsecurityjwt.models;
 
 import com.example.springsecurityjwt.enums.RoleEnum;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @Entity
 @Table(name = "roles")
-public class RoleEntity {
+public class RoleEntity extends CommonsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

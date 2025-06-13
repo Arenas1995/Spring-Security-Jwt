@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.Set;
 
 @Service
 @Slf4j
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService, UserDetailService {
 
     private final UserRepository userRepository;
 
@@ -65,9 +66,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 userEntity.isAccountNoLocked(), authorities);
     }
 
-    public AuthResponse createUser(AuthCreateUserRequest authCreateUserRequest) {
+    @Override
+    public AuthResponse registerUser(AuthCreateUserRequest authCreateUserRequest) {
 
-        log.info("INICIA PROCESO CREAR USUARIO");
+        log.info("INICIA PROCESO REGISTRAR USUARIO");
         String username = authCreateUserRequest.username();
         String password = authCreateUserRequest.password();
         List<String> rolesRequest = authCreateUserRequest.roleRequest().roleListName();
@@ -82,12 +84,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         UserEntity userEntity = UserEntity.builder()
                 .username(username)
                 .password(passwordEncoder.encode(password))
-                .email("prueba@prueba.com")
+                .email(username)
                 .roles(roleEntityList)
-                .isEnabled(true)
+                .enabled(true)
                 .accountNoLocked(true)
                 .accountNoExpired(true)
-                .credentialNoExpired(true).build();
+                .credentialNoExpired(true)
+                .createUser(username)
+                .createDate(LocalDateTime.now()).build();
 
         UserEntity userSaved = userRepository.save(userEntity);
 

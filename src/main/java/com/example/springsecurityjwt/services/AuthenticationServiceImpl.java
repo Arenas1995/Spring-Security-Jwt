@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class AuthenticationServiceImpl {
+public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final JwtUtilities jwtUtilities;
 
@@ -29,6 +29,7 @@ public class AuthenticationServiceImpl {
         this.userDetailsService = userDetailsService;
     }
 
+    @Override
     public AuthResponse loginUser(AuthLoginRequest authLoginRequest) {
 
         String username = authLoginRequest.username();

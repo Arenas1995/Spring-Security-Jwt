@@ -2,12 +2,11 @@ package com.example.springsecurityjwt.requests;
 
 import com.example.springsecurityjwt.enums.PermissionsEnum;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

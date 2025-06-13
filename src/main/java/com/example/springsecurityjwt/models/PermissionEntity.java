@@ -2,18 +2,18 @@ package com.example.springsecurityjwt.models;
 
 import com.example.springsecurityjwt.enums.PermissionsEnum;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @Entity
 @Table(name = "permissions")
-public class PermissionEntity {
+public class PermissionEntity extends CommonsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

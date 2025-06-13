@@ -64,7 +64,7 @@ public class JwtUtilities {
         }
     }
 
-    public String extractUsername(DecodedJWT decodedJWT){
+    public String extractUsername(DecodedJWT decodedJWT) {
         return decodedJWT.getSubject();
     }
 

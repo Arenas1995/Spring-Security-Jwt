@@ -16,9 +16,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -46,11 +43,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         log.info("INICIA PROCESO FILTRO DE SEGURIDAD");
 
-        try {
-            String jwtToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String jwtToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-            if (jwtToken != null) {
-                jwtToken = jwtToken.substring(7);
+        if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
+            jwtToken = jwtToken.substring(7);
+            try {
 
                 DecodedJWT decodedJWT = jwtUtilities.validateToken(jwtToken);
 
@@ -64,16 +61,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 context.setAuthentication(authenticationToken);
                 SecurityContextHolder.setContext(context);
 
+                log.info("Autenticación establecida para el usuario {}", username);
+
+            } catch (Exception ex) {
+                log.error("ERROR EN EL FILTRO DE SEGURIDAD: {}", ex.getMessage(), ex);
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\": \"Token inválido o expirado: " + ex.getMessage() + "\"}");
+                return;
             }
-            filterChain.doFilter(request, response);
-        } catch (Exception ex) {
-            log.error("ERROR EN EL FILTRO DE SEGURIDAD: {}", ex.getMessage(), ex);
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"Token inválido o expirado: " + ex.getMessage() + "\"}");
         }
-
-
+        filterChain.doFilter(request, response);
     }
 
     /*@Override

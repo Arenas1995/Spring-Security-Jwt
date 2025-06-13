@@ -1,10 +1,8 @@
 package com.example.springsecurityjwt.config;
 
-import com.example.springsecurityjwt.filters.JwtAuthenticationFilter;
 import com.example.springsecurityjwt.filters.JwtAuthorizationFilter;
 import com.example.springsecurityjwt.jwt.JwtUtilities;
 import com.example.springsecurityjwt.jwt.JwtUtils;
-import com.example.springsecurityjwt.services.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

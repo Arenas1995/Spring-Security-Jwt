@@ -1,0 +1,25 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: spring-security-jwt
+  datasource:
+    url: jdbc:mysql://localhost:3306/securitydb
+    username: root
+    password: root
+    driverClassName: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+
+jwt:
+  secret-key: 0jIdNGEMGqylM00KO+2HPayDi796nINoRNTi2vE+ptWz3xIerEJdmjttGh6eOpvB
+  user-generator: CotrafaSecurity
+  time-expiration: 120000
+
+logging:
+  level:
+    org.springframework.security: INFO

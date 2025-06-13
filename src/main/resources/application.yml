@@ -5,7 +5,7 @@ spring:
   application:
     name: spring-security-jwt
   datasource:
-    url: ${DB_HOST}
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_DATA_BASE}
     username: ${USER_DB}
     password: ${PASSWORD_DB}
     driverClassName: com.mysql.cj.jdbc.Driver

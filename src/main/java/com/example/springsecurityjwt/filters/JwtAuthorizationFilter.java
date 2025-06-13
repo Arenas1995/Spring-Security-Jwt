@@ -43,12 +43,20 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         log.info("INICIA PROCESO FILTRO DE SEGURIDAD");
 
-        String jwtToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+        try {
+            String path = request.getServletPath();
 
-        if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
-            jwtToken = jwtToken.substring(7);
-            try {
+            // Evita filtrar rutas públicas
+            if (path.startsWith("/auth/")) {
+                log.info("Ruta pública detectada: {}", path);
+                filterChain.doFilter(request, response);
+                return;
+            }
 
+            String jwtToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+            if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
+                jwtToken = jwtToken.substring(7);
                 DecodedJWT decodedJWT = jwtUtilities.validateToken(jwtToken);
 
                 String username = jwtUtilities.extractUsername(decodedJWT);
@@ -62,16 +70,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.setContext(context);
 
                 log.info("Autenticación establecida para el usuario {}", username);
-
-            } catch (Exception ex) {
-                log.error("ERROR EN EL FILTRO DE SEGURIDAD: {}", ex.getMessage(), ex);
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write("{\"error\": \"Token inválido o expirado: " + ex.getMessage() + "\"}");
-                return;
             }
+            filterChain.doFilter(request, response);
+            log.info("Solicitud procesada exitosamente");
+        } catch (Exception ex) {
+            log.error("ERROR EN EL FILTRO DE SEGURIDAD: {}", ex.getMessage(), ex);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Token inválido o expirado: " + ex.getMessage() + "\"}");
         }
-        filterChain.doFilter(request, response);
     }
 
     /*@Override

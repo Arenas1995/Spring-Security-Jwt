@@ -45,25 +45,34 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         log.info("INICIA PROCESO FILTRO DE SEGURIDAD");
-        String jwtToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (jwtToken != null) {
-            jwtToken = jwtToken.substring(7);
+        try {
+            String jwtToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-            DecodedJWT decodedJWT = jwtUtilities.validateToken(jwtToken);
+            if (jwtToken != null) {
+                jwtToken = jwtToken.substring(7);
 
-            String username = jwtUtilities.extractUsername(decodedJWT);
-            String stringAuthorities = jwtUtilities.getSpecificClaim(decodedJWT, "authorities").asString();
+                DecodedJWT decodedJWT = jwtUtilities.validateToken(jwtToken);
 
-            Collection<? extends GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(stringAuthorities);
+                String username = jwtUtilities.extractUsername(decodedJWT);
+                String stringAuthorities = jwtUtilities.getSpecificClaim(decodedJWT, "authorities").asString();
 
-            SecurityContext context = SecurityContextHolder.createEmptyContext();
-            Authentication authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
-            context.setAuthentication(authenticationToken);
-            SecurityContextHolder.setContext(context);
+                Collection<? extends GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(stringAuthorities);
 
+                SecurityContext context = SecurityContextHolder.createEmptyContext();
+                Authentication authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
+                context.setAuthentication(authenticationToken);
+                SecurityContextHolder.setContext(context);
+
+            }
+            filterChain.doFilter(request, response);
+        } catch (Exception ex) {
+            log.error("ERROR EN EL FILTRO DE SEGURIDAD: {}", ex.getMessage(), ex);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Token inválido o expirado: " + ex.getMessage() + "\"}");
         }
-        filterChain.doFilter(request, response);
+
 
     }
 

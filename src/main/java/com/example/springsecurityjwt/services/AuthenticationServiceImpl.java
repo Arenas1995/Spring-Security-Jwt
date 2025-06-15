@@ -4,6 +4,7 @@ import com.example.springsecurityjwt.jwt.JwtUtilities;
 import com.example.springsecurityjwt.requests.AuthLoginRequest;
 import com.example.springsecurityjwt.responses.AuthResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,6 +13,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Locale;
 
 @Service
 @Slf4j
@@ -23,10 +26,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserDetailsService userDetailsService;
 
-    public AuthenticationServiceImpl(JwtUtilities jwtUtilities, PasswordEncoder passwordEncoder, UserDetailsService userDetailsService) {
+    private final MessageSource messageSource;
+
+    public AuthenticationServiceImpl(JwtUtilities jwtUtilities, PasswordEncoder passwordEncoder, UserDetailsService userDetailsService, MessageSource messageSource) {
         this.jwtUtilities = jwtUtilities;
         this.passwordEncoder = passwordEncoder;
         this.userDetailsService = userDetailsService;
+        this.messageSource = messageSource;
     }
 
     @Override
@@ -46,13 +52,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         if (userDetails == null) {
-            log.error("Invalid username or password");
-            throw new BadCredentialsException("Invalid username or password");
+            log.error(messageSource.getMessage("auth.user.notfound",
+                    new Object[]{username}, Locale.getDefault()));
+            throw new BadCredentialsException(messageSource.getMessage("auth.credentials.invalid.message",
+                    null, Locale.getDefault()));
         }
 
         if (!passwordEncoder.matches(password, userDetails.getPassword())) {
-            log.error("Invalid password");
-            throw new BadCredentialsException("Incorrect Password");
+            log.error(messageSource.getMessage("auth.password.invalid",
+                    null, Locale.getDefault()));
+            throw new BadCredentialsException(messageSource.getMessage("auth.credentials.invalid.message",
+                    null, Locale.getDefault()));
         }
 
         return new UsernamePasswordAuthenticationToken(username, password, userDetails.getAuthorities());

@@ -13,7 +13,7 @@ RUN chmod +x ./gradlew
 RUN ./gradlew clean build -x test -x check
 
 # Etapa de ejecución con JRE 23
-FROM eclipse-temurin:23-jre
+FROM eclipse-temurin:23-jre-alpine
 
 WORKDIR /app
 

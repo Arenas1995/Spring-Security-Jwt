@@ -1,11 +1,21 @@
 spring:
   application:
     name: spring-security-jwt
+  messages:
+    basename: messages
+    encoding: UTF-8
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_DATA_BASE}
     username: ${USER_DB}
     password: ${PASSWORD_DB}
     driverClassName: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      pool-name: HikariCP
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     show-sql: ${JPA_SHOW_SQL}

@@ -8,6 +8,7 @@ import com.example.springsecurityjwt.repositories.UserRepository;
 import com.example.springsecurityjwt.requests.AuthCreateUserRequest;
 import com.example.springsecurityjwt.responses.AuthResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -38,19 +39,25 @@ public class UserDetailsServiceImpl implements UserDetailsService, UserDetailSer
 
     private final PasswordEncoder passwordEncoder;
 
-    public UserDetailsServiceImpl(UserRepository userRepository, RoleRepository roleRepository, JwtUtilities jwtUtilities, PasswordEncoder passwordEncoder) {
+    private final MessageSource messageSource;
+
+    public UserDetailsServiceImpl(UserRepository userRepository, RoleRepository roleRepository, JwtUtilities jwtUtilities, PasswordEncoder passwordEncoder, MessageSource messageSource) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.jwtUtilities = jwtUtilities;
         this.passwordEncoder = passwordEncoder;
+        this.messageSource = messageSource;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         log.info("INICIA PROCESO CARGAR USUARIO");
-        UserEntity userEntity = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("El usuario no existe: " + username));
+        UserEntity userEntity = userRepository.findByUsername(username).orElse(null);
+
+        if (userEntity == null) {
+            return null;
+        }
 
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 

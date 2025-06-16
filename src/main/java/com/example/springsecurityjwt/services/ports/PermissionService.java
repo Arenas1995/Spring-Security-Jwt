@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface PermissionService {
 
-    List<PermissionResponse> findAllRoles();
+    List<PermissionResponse> findAllPermissions();
 
-    PermissionResponse saveRole(PermissionRequest permissionRequest);
+    List<PermissionResponse> savePermissions(List<PermissionRequest> permissionRequest);
 }

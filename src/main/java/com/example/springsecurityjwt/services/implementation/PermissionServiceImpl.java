@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -26,16 +27,26 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public List<PermissionResponse> findAllRoles() {
+    public List<PermissionResponse> findAllPermissions() {
         List<PermissionEntity> permissionEntityList = permissionRepository.findAll();
         return permissionMapper.toResponseList(permissionEntityList);
     }
 
     @Override
-    public PermissionResponse saveRole(PermissionRequest permissionRequest) {
-        PermissionEntity permissionEntity = permissionMapper.toEntity(permissionRequest);
-        permissionEntity.setCreateDate(LocalDateTime.now());
-        permissionEntity.setUpdateDate(LocalDateTime.now());
-        return permissionMapper.toResponse(permissionRepository.save(permissionEntity));
+    public List<PermissionResponse> savePermissions(List<PermissionRequest> permissionRequests) {
+
+        List<PermissionEntity> entities = permissionRequests.stream()
+                .map(request -> {
+                    PermissionEntity entity = permissionMapper.toEntity(request);
+                    entity.setCreateDate(LocalDateTime.now());
+                    entity.setUpdateDate(LocalDateTime.now());
+                    return entity;
+                }).collect(Collectors.toList());
+
+        List<PermissionEntity> savedPermissions = permissionRepository.saveAll(entities);
+
+        return savedPermissions.stream()
+                .map(permissionMapper::toResponse)
+                .collect(Collectors.toList());
     }
 }

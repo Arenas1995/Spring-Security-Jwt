@@ -125,7 +125,7 @@ public class UserDetailsServiceImpl implements UserDetailsService, UserDetailSer
                 authorities.add(new SimpleGrantedAuthority(permission.getName().name())));
 
         SecurityContext securityContextHolder = SecurityContextHolder.getContext();
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userSaved, null, authorities);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(username, password, authorities);
 
         String accessToken = jwtUtilities.generateAccesToken(authentication);
 

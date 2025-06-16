@@ -1,12 +1,16 @@
 package com.example.springsecurityjwt.services;
 
 import com.example.springsecurityjwt.jwt.JwtUtilities;
-import com.example.springsecurityjwt.models.RoleEntity;
-import com.example.springsecurityjwt.models.UserEntity;
+import com.example.springsecurityjwt.mappers.UserMapper;
+import com.example.springsecurityjwt.models.entities.RoleEntity;
+import com.example.springsecurityjwt.models.entities.UserEntity;
+import com.example.springsecurityjwt.repositories.PermissionRepository;
 import com.example.springsecurityjwt.repositories.RoleRepository;
 import com.example.springsecurityjwt.repositories.UserRepository;
 import com.example.springsecurityjwt.requests.AuthCreateUserRequest;
+import com.example.springsecurityjwt.requests.UserRequest;
 import com.example.springsecurityjwt.responses.AuthResponse;
+import com.example.springsecurityjwt.responses.UserResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,11 +25,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -35,18 +39,24 @@ public class UserDetailsServiceImpl implements UserDetailsService, UserDetailSer
 
     private final RoleRepository roleRepository;
 
+    private final PermissionRepository permissionRepository;
+
     private final JwtUtilities jwtUtilities;
 
     private final PasswordEncoder passwordEncoder;
 
     private final MessageSource messageSource;
 
-    public UserDetailsServiceImpl(UserRepository userRepository, RoleRepository roleRepository, JwtUtilities jwtUtilities, PasswordEncoder passwordEncoder, MessageSource messageSource) {
+    private final UserMapper userMapper;
+
+    public UserDetailsServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PermissionRepository permissionRepository, JwtUtilities jwtUtilities, PasswordEncoder passwordEncoder, MessageSource messageSource, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.permissionRepository = permissionRepository;
         this.jwtUtilities = jwtUtilities;
         this.passwordEncoder = passwordEncoder;
         this.messageSource = messageSource;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -98,7 +108,7 @@ public class UserDetailsServiceImpl implements UserDetailsService, UserDetailSer
                 .accountNoExpired(true)
                 .credentialNoExpired(true)
                 .createUser(username)
-                .createDate(LocalDateTime.now()).build();
+                .updateUser(username).build();
 
         UserEntity userSaved = userRepository.save(userEntity);
 
@@ -119,4 +129,31 @@ public class UserDetailsServiceImpl implements UserDetailsService, UserDetailSer
         log.info("USUARIO CREADO CON EXITO");
         return new AuthResponse(username, "User created successfully", accessToken, true);
     }
+
+    @Override
+    public UserResponse saveUser(UserRequest userRequest) {
+        // Obtener los roles desde la base de datos
+        Set<RoleEntity> roles = userRequest.getRoles().stream()
+                .map(roleRequest -> roleRepository.findByName(roleRequest.getRole())
+                        .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + roleRequest.getRole())))
+                .collect(Collectors.toSet());
+
+        // Crear usuario
+        UserEntity userEntity = UserEntity.builder()
+                .email(userRequest.getEmail())
+                .username(userRequest.getUsername())
+                .password(passwordEncoder.encode(userRequest.getPassword()))
+                .roles(roles)
+                .enabled(true)
+                .accountNoLocked(true)
+                .accountNoExpired(true)
+                .credentialNoExpired(true)
+                .createUser(userRequest.getUsername())
+                .updateUser(userRequest.getUsername())
+                .build();
+
+        // Guardar usuario y retornar respuesta
+        return userMapper.toResponse(userRepository.save(userEntity));
+    }
+
 }

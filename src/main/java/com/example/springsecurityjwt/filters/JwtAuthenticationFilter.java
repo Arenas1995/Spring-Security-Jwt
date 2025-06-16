@@ -2,7 +2,7 @@ package com.example.springsecurityjwt.filters;
 
 import com.example.springsecurityjwt.jwt.JwtUtilities;
 import com.example.springsecurityjwt.jwt.JwtUtils;
-import com.example.springsecurityjwt.models.UserEntity;
+import com.example.springsecurityjwt.models.entities.UserEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

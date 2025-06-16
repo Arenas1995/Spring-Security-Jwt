@@ -21,6 +21,10 @@ spring:
     show-sql: ${JPA_SHOW_SQL}
     hibernate:
       ddl-auto: ${JPA_HIBERNATE_DDL_AUTO}
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    serialization:
+      write-dates-as-timestamps: false
 
 jwt:
   secret-key: ${JWT_SECRET_LEY}

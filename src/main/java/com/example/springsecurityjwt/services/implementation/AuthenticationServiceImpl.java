@@ -1,8 +1,9 @@
-package com.example.springsecurityjwt.services;
+package com.example.springsecurityjwt.services.implementation;
 
 import com.example.springsecurityjwt.jwt.JwtUtilities;
 import com.example.springsecurityjwt.requests.AuthLoginRequest;
 import com.example.springsecurityjwt.responses.AuthResponse;
+import com.example.springsecurityjwt.services.ports.AuthenticationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.BadCredentialsException;

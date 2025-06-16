@@ -1,7 +1,7 @@
 package com.example.springsecurityjwt.requests;
 
 import com.example.springsecurityjwt.enums.PermissionsEnum;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -12,7 +12,7 @@ import lombok.*;
 @Builder
 public class PermissionRequest {
 
-    @NotBlank
-    private PermissionsEnum permission;
+    @NotNull
+    private PermissionsEnum name;
 
 }

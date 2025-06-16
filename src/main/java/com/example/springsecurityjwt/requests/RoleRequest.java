@@ -1,8 +1,8 @@
 package com.example.springsecurityjwt.requests;
 
 import com.example.springsecurityjwt.enums.RoleEnum;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.Set;
@@ -15,8 +15,8 @@ import java.util.Set;
 @Builder
 public class RoleRequest {
 
-    @NotBlank
-    private RoleEnum role;
+    @NotNull
+    private RoleEnum name;
 
     @NotEmpty
     private Set<PermissionRequest> permissions;

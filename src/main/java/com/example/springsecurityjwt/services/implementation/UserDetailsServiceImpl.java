@@ -1,4 +1,4 @@
-package com.example.springsecurityjwt.services;
+package com.example.springsecurityjwt.services.implementation;
 
 import com.example.springsecurityjwt.jwt.JwtUtilities;
 import com.example.springsecurityjwt.mappers.UserMapper;
@@ -11,6 +11,7 @@ import com.example.springsecurityjwt.requests.AuthCreateUserRequest;
 import com.example.springsecurityjwt.requests.UserRequest;
 import com.example.springsecurityjwt.responses.AuthResponse;
 import com.example.springsecurityjwt.responses.UserResponse;
+import com.example.springsecurityjwt.services.ports.UserDetailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -49,7 +50,9 @@ public class UserDetailsServiceImpl implements UserDetailsService, UserDetailSer
 
     private final UserMapper userMapper;
 
-    public UserDetailsServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PermissionRepository permissionRepository, JwtUtilities jwtUtilities, PasswordEncoder passwordEncoder, MessageSource messageSource, UserMapper userMapper) {
+    public UserDetailsServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
+                                  PermissionRepository permissionRepository, JwtUtilities jwtUtilities,
+                                  PasswordEncoder passwordEncoder, MessageSource messageSource, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.permissionRepository = permissionRepository;
@@ -134,8 +137,8 @@ public class UserDetailsServiceImpl implements UserDetailsService, UserDetailSer
     public UserResponse saveUser(UserRequest userRequest) {
         // Obtener los roles desde la base de datos
         Set<RoleEntity> roles = userRequest.getRoles().stream()
-                .map(roleRequest -> roleRepository.findByName(roleRequest.getRole())
-                        .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + roleRequest.getRole())))
+                .map(roleRequest -> roleRepository.findByName(roleRequest.getName())
+                        .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + roleRequest.getName())))
                 .collect(Collectors.toSet());
 
         // Crear usuario

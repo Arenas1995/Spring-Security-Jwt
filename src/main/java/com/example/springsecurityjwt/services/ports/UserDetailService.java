@@ -1,4 +1,4 @@
-package com.example.springsecurityjwt.services;
+package com.example.springsecurityjwt.services.ports;
 
 import com.example.springsecurityjwt.requests.AuthCreateUserRequest;
 import com.example.springsecurityjwt.requests.UserRequest;
